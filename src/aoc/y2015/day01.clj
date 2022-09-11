@@ -1,5 +1,7 @@
 (ns aoc.y2015.day01)
 
+(set! *warn-on-reflection* true)
+
 (defonce ^:private data (slurp "resources/2015/day01"))
 
 (defn- floor->int [floor]
