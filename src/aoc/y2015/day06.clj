@@ -1,5 +1,6 @@
 (ns aoc.y2015.day06
-  (:require [instaparse.core :as insta]))
+  (:require [instaparse.core :as insta]
+            [instaparse.transform :as insta.t]))
 
 (set! *warn-on-reflection* true)
 
@@ -16,7 +17,7 @@
     <DIGIT> = #'[0-9]+'"))
 
 (defn- parse-data [data]
-  (insta/transform
+  (insta.t/transform
    {:COORDINATE (fn [x y] [(parse-long x) (parse-long y)])
     :COMMAND (fn [com-str]
                (case com-str
