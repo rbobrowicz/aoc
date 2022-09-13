@@ -1,5 +1,6 @@
 (ns aoc.y2015.day06
-  (:require [instaparse.core :as insta]
+  (:require [clojure.string :as str]
+            [instaparse.core :as insta]
             [instaparse.transform :as insta.t]))
 
 (set! *warn-on-reflection* true)
@@ -8,15 +9,13 @@
 
 (def ^:private parser
   (insta/parser
-   "S = LINE*;
-    <LINE> = INSTRUCTION <WS>
-    INSTRUCTION = COMMAND <WS> COORDINATE <WS> <'through'> <WS> COORDINATE
+   "S = COMMAND <WS> COORDINATE <WS> <'through'> <WS> COORDINATE
     COMMAND = 'turn off' | 'turn on' | 'toggle'
     COORDINATE = DIGIT <','> DIGIT
     WS = #'\\s+'
     <DIGIT> = #'[0-9]+'"))
 
-(defn- parse-data [data]
+(defn- parse-line [line]
   (insta.t/transform
    {:COORDINATE (fn [x y] [(parse-long x) (parse-long y)])
     :COMMAND (fn [com-str]
@@ -24,9 +23,11 @@
                  "turn off" :turnoff
                  "turn on" :turnon
                  "toggle" :toggle))
-    :INSTRUCTION (fn [com c1 c2] [com c1 c2])
-    :S (fn [& instrs] (reverse instrs))}
-   (parser data)))
+    :S vector}
+   (parser line)))
+
+(defn- parse-data [data]
+  (map parse-line (str/split-lines data)))
 
 (defn- in-bounds? [[x y] [x-low y-low] [x-high y-high]]
   (and (<= x-low x x-high)
@@ -56,6 +57,7 @@
 (defn- puzzle-1 []
   (->> data
        parse-data
+       reverse
        count-on-lights))
 
 (defn- light-brightness [point instrs]
@@ -79,6 +81,7 @@
 (defn- puzzle-2 []
   (->> data
        parse-data
+       reverse
        total-brightness))
 
 (comment

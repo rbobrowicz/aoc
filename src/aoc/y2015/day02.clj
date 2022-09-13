@@ -1,5 +1,7 @@
 (ns aoc.y2015.day02
-  (:require [instaparse.core :as insta]))
+  (:require [clojure.string :as str]
+            [instaparse.core :as insta]
+            [instaparse.transform :as insta.t]))
 
 (set! *warn-on-reflection* true)
 
@@ -7,16 +9,19 @@
 
 (def ^:private parser
   (insta/parser
-   "<S> = LINE*;
-    LINE = DIGIT <'x'> DIGIT <'x'> DIGIT <'\n'>
-    <DIGIT> = #'[0-9]+'"))
+   "S = DIGIT <'x'> DIGIT <'x'> DIGIT
+    DIGIT = #'[0-9]+'"))
+
+(defn- parse-line [line]
+  (insta.t/transform
+   {:S vector
+    :DIGIT parse-long}
+   (parser line)))
 
 (defn- parse-data [data]
   (->> data
-       parser
-       (map (fn [[_ l w h]] [(parse-long l)
-                             (parse-long w)
-                             (parse-long h)]))))
+       str/split-lines
+       (map parse-line)))
 
 (defn- calc-paper-needed [[l w h]]
   (let [side1-area (* l w)

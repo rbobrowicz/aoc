@@ -1,5 +1,6 @@
 (ns aoc.y2015.day07
-  (:require [instaparse.core :as insta]
+  (:require [clojure.string :as str]
+            [instaparse.core :as insta]
             [instaparse.transform :as insta.t]))
 
 (set! *warn-on-reflection* true)
@@ -8,9 +9,7 @@
 
 (def ^:private parser
   (insta/parser
-   "<S> = LINE*;
-    <LINE> = INSTRUCTION <WS>
-    <INSTRUCTION> = SIGNAL | AND | OR | LSHIFT | RSHIFT | NOT
+   "S = SIGNAL | AND | OR | LSHIFT | RSHIFT | NOT
     SIGNAL = INPUT <ARROW> ID
     AND = INPUT <ANDLIT> INPUT <ARROW> ID
     OR = INPUT <ORLIT> INPUT <ARROW> ID
@@ -28,11 +27,15 @@
     ID = #'[a-z]+'
     DIGIT = #'[0-9]+'"))
 
-(defn- parse [data]
+(defn- parse-line [line]
   (insta.t/transform
-   {:ID keyword
+   {:S identity
+    :ID keyword
     :DIGIT parse-long}
-   (parser data)))
+   (parser line)))
+
+(defn- parse-data [data]
+  (map parse-line (str/split-lines data)))
 
 (defn- get-value [x circuit]
   (if (keyword? x)
@@ -87,10 +90,10 @@
         (recur leftover-instructions nil circuit)))))
 
 (defn- puzzle-1 []
-  (run-circuit (parse data)))
+  (run-circuit (parse-data data)))
 
 (defn- puzzle-2 []
-  (run-circuit (cons [:SIGNAL 956 :b] (parse data))))
+  (run-circuit (cons [:SIGNAL 956 :b] (parse-data data))))
 
 (comment
   (puzzle-1)
