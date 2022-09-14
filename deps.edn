@@ -1,5 +1,6 @@
 {:deps
- {instaparse/instaparse {:mvn/version "1.4.12"}}
+ {instaparse/instaparse {:mvn/version "1.4.12"}
+  metosin/jsonista {:mvn/version "0.3.6"}}
 
  :aliases
  {:format {:extra-deps {cljfmt/cljfmt {:mvn/version "0.9.0"}}
