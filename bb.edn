@@ -1,0 +1,17 @@
+
+{:tasks
+ {:requires
+  ([babashka.fs :as fs])
+
+  -lint-deps
+  (when (seq (fs/modified-since ".clj-kondo/.cache" "deps.edn"))
+    (shell "bash -c" "clj-kondo --copy-configs --dependencies --parallel --lint \"$(clojure -Spath)\""))
+
+  lint
+  {:doc "Lint source"
+   :depends [-lint-deps]
+   :task (shell "clj-kondo --lint src")}
+
+  format
+  {:doc "Format source"}
+   :task (clojure "-M:format" "fix")}}
